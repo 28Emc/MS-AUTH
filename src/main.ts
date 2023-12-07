@@ -1,4 +1,4 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
@@ -40,7 +40,8 @@ async function bootstrap() {
     }
   }));
 
-  app.useGlobalGuards(new ApiKeyGuard());
+  const reflector = app.get(Reflector);
+  app.useGlobalGuards(new ApiKeyGuard(reflector));
 
   app.setGlobalPrefix(globalPrefix);
 

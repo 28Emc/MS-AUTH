@@ -8,6 +8,8 @@ import { PassportModule } from '@nestjs/passport';
 import { LocalStrategy } from './passport/strategies/local.strategy';
 import { JWTStrategy } from './passport/strategies/jwt.strategy';
 import { PassportController } from './passport/passport.controller';
+import { PassportService } from './passport/passport.service';
+import { GoogleStrategy } from './passport/strategies/google.strategy';
 
 ConfigModule.forRoot({
   envFilePath: `.env.${process.env.NODE_ENV}`,
@@ -28,9 +30,10 @@ const configService = new ConfigService();
   providers: [
     AuthService,
     LocalStrategy,
-    JWTStrategy
+    JWTStrategy,
+    GoogleStrategy,
+    PassportService
   ],
-  controllers: [AuthController, PassportController],
-  // exports: [AuthService]
+  controllers: [AuthController, PassportController]
 })
 export class AuthModule { }
