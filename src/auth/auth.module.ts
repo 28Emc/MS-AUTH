@@ -5,8 +5,9 @@ import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
-import { LocalStrategy } from './strategies/local.strategy';
-import { JWTStrategy } from './strategies/jwt.strategy';
+import { LocalStrategy } from './passport/strategies/local.strategy';
+import { JWTStrategy } from './passport/strategies/jwt.strategy';
+import { PassportController } from './passport/passport.controller';
 
 ConfigModule.forRoot({
   envFilePath: `.env.${process.env.NODE_ENV}`,
@@ -29,7 +30,7 @@ const configService = new ConfigService();
     LocalStrategy,
     JWTStrategy
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, PassportController],
   // exports: [AuthService]
 })
 export class AuthModule { }
