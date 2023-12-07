@@ -8,6 +8,8 @@ import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiHeader, Ap
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { JwtResponseDto } from './dto/jwt-response.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
+import { LocalAuthGuard } from 'src/guards/local-auth/local-auth.guard';
+import { JwtAuthGuard } from 'src/guards/jwt-auth/jwt-auth.guard';
 
 @ApiTags('Auth')
 @ApiHeader({ name: 'x-api-key', description: 'API key that must be provided to access this API' })
@@ -25,6 +27,31 @@ export class AuthController {
     @Post('login')
     signIn(@Body() loginDto: LoginDto) {
         return this.authService.signIn(loginDto);
+    }
+
+    @ApiOperation({ summary: 'Endpoint that allow users to log in (returns JWT).', operationId: 'jwt-sign-in' })
+    @ApiOkResponse({ description: 'User signed in successfully', type: JwtResponseDto })
+    @ApiBadRequestResponse({ description: 'Incorrect user or password / User account was suspended' })
+    @ApiUnauthorizedResponse({ description: 'Api key not found' })
+    @ApiNotFoundResponse({ description: 'User not found' })
+    @ApiInternalServerErrorResponse({ description: 'Internal server error' })
+    @HttpCode(HttpStatus.OK)
+    @Post('login/jwt')
+    signInJWT(@Body() loginDto: LoginDto) {
+        return this.authService.signInJWT(loginDto);
+    }
+
+    @ApiOperation({ summary: 'Endpoint that allow users to log in (throught Passport local strategy, returns JWT).', operationId: 'passport-local-sign-in' })
+    @ApiOkResponse({ description: 'User signed in successfully', type: JwtResponseDto })
+    @ApiBadRequestResponse({ description: 'Incorrect user or password / User account was suspended' })
+    @ApiUnauthorizedResponse({ description: 'Api key not found' })
+    @ApiNotFoundResponse({ description: 'User not found' })
+    @ApiInternalServerErrorResponse({ description: 'Internal server error' })
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(LocalAuthGuard)
+    @Post('passport/login')
+    passportLocalSignIn(@Request() req) {
+        return req.user;
     }
 
     @ApiOperation({ summary: 'Endpoint that allow users to sign up.', operationId: 'sign-up' })
@@ -47,6 +74,18 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Get('jwt/verify')
     verifyToken(@Request() req) {
+        return req.user;
+    }
+
+    @ApiOperation({ summary: 'Endpoint that allow the validation of the access token (throught Passport).', operationId: 'passport-verify-token' })
+    @ApiBearerAuth()
+    @ApiOkResponse({ description: 'Token verified successfully' })
+    @ApiUnauthorizedResponse({ description: 'Api key not found' })
+    @ApiInternalServerErrorResponse({ description: 'Internal server error' })
+    @UseGuards(JwtAuthGuard)
+    @HttpCode(HttpStatus.OK)
+    @Get('passport/jwt/verify')
+    verifyPassportToken(@Request() req) {
         return req.user;
     }
 

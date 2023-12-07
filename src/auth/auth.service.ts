@@ -17,7 +17,23 @@ export class AuthService {
         private jwtService: JwtService,
     ) { }
 
-    async signIn(user: LoginDto): Promise<JwtResponseDto> {
+    async signIn(user: LoginDto): Promise<any> {
+        const foundUser = await this.userService.findOne(user.username);
+        if (!foundUser) {
+            throw new NotFoundException('User not found');
+        }
+        const isMatch = await bcrypt.compare(user.password, foundUser.password);
+        if (!isMatch) {
+            throw new BadRequestException('Incorrect user or password');
+        }
+        if (foundUser.status !== UserStatus.ACTIVE) {
+            throw new BadRequestException('User account was suspended');
+        }
+        const { password, ...restOfData } = foundUser;
+        return restOfData;
+    }
+
+    async signInJWT(user: LoginDto): Promise<JwtResponseDto> {
         const foundUser = await this.userService.findOne(user.username);
         if (!foundUser) {
             throw new NotFoundException('User not found');
