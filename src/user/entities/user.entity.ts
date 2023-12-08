@@ -5,6 +5,11 @@ export enum UserStatus {
     'INACTIVE' = 'I'
 }
 
+export enum LoginModes {
+    'DEFAULT' = 1,
+    'GOOGLE' = 2
+}
+
 @Entity({ name: 'users' })
 export class User {
     @PrimaryGeneratedColumn({ name: 'u_id' })
@@ -16,8 +21,20 @@ export class User {
     @Column({ name: 'u_password', type: 'varchar', length: 255, default: 'No password' })
     password: string;
 
+    @Column({ name: 'u_picture', type: 'text' })
+    picture: string;
+
+    @Column({ name: 'u_first_name', type: 'varchar', length: 255, nullable: true })
+    firstName: string;
+
+    @Column({ name: 'u_last_name', type: 'varchar', length: 255, nullable: true })
+    lastName: string;
+
     @Column({ name: 'u_status', type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
     status: UserStatus;
+
+    @Column({ name: 'u_flg_mode', type: 'enum', enum: LoginModes, default: LoginModes.DEFAULT })
+    flgLogin: LoginModes;
 
     @CreateDateColumn({ name: 'u_creation_date', type: 'datetime' })
     creationDate: Date;

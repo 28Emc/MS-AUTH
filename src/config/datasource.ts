@@ -13,7 +13,7 @@ let typeOrmOptions: TypeOrmModuleOptions = {
   username: configService.get<string>('DB_USER'),
   password: configService.get<string>('DB_PASSWORD'),
   logging: configService.get<string>('NODE_ENV') === 'local',
-  // synchronize: configService.get<string>('NODE_ENV') === 'local',
+  synchronize: configService.get<string>('NODE_ENV') === 'local',
 };
 
 if (configService.get<string>('NODE_ENV') === 'local') {

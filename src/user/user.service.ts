@@ -1,5 +1,5 @@
 import { BadRequestException, InternalServerErrorException, NotFoundException, Injectable } from '@nestjs/common';
-import { User, UserStatus } from './entities/user.entity';
+import { LoginModes, User, UserStatus } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -40,6 +40,10 @@ export class UserService {
         }
         try {
             user.password = await bcrypt.hash(user.password, 10);
+            let picture = 'https://picsum.photos/200'; // TODO: CAMBIAR POR UN SERVICIO DE CARGA DE IMÁGENES Y DEVOLVER LA URL
+            if (!user.picture || user.picture === '') {
+                user.picture = picture;
+            }
             return await this.userRepository.save({
                 ...user,
             });
@@ -48,17 +52,18 @@ export class UserService {
         }
     }
 
-    async update(user: any, id: number): Promise<User | undefined> {
+    async update(id: number, user: any): Promise<User | undefined> {
         let foundUser: User = await this.findById(id);
         if (!foundUser) {
             throw new NotFoundException('User not found');
         }
-        if (foundUser.status !== UserStatus.ACTIVE) {
-            throw new BadRequestException('User account was suspended');
+        if (foundUser.flgLogin === LoginModes.GOOGLE) {
+            throw new BadRequestException('Your profile information is linked to your Google Account and cannot be edited here. To update your profile, please sign in to your Google Account and go to your Google Account settings.');
         }
         try {
             await this.userRepository.update(id, {
                 ...user,
+                picture: foundUser.picture
             });
             return await this.findById(id);
         } catch (error) {
@@ -66,13 +71,16 @@ export class UserService {
         }
     }
 
-    async updatePassword(user: any, id: number): Promise<User | undefined> {
+    async updatePassword(id: number, user: any): Promise<User | undefined> {
         let foundUser: User = await this.findById(id);
         if (!foundUser) {
             throw new NotFoundException('User not found');
         }
         if (foundUser.status !== UserStatus.ACTIVE) {
             throw new BadRequestException('User account was suspended');
+        }
+        if (foundUser.flgLogin === LoginModes.GOOGLE) {
+            throw new BadRequestException('Your profile information is linked to your Google Account and cannot be edited here. To update your profile, please sign in to your Google Account and go to your Google Account settings.');
         }
         const isMatch = await bcrypt.compare(user.currentPassword, foundUser.password);
         if (!isMatch) {
@@ -81,9 +89,9 @@ export class UserService {
         try {
             foundUser.password = await bcrypt.hash(user.newPassword, 10);
             await this.userRepository.update(id, {
-                ...user,
+                ...foundUser,
             });
-            return await this.findById(id);
+            return foundUser;
         } catch (error) {
             throw new InternalServerErrorException('There was an error while updating user');
         }
@@ -102,7 +110,7 @@ export class UserService {
             await this.userRepository.update(id, {
                 ...foundUser,
             });
-            return await this.findById(id);
+            return foundUser;
         } catch (error) {
             throw new InternalServerErrorException('There was an error while deleting user');
         }

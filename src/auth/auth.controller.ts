@@ -1,6 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { JwtTokenGuard } from 'src/guards/jwt-token/jwt-token.guard';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -8,6 +7,7 @@ import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiHeader, Ap
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { JwtResponseDto } from './dto/jwt-response.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
+import { JwtTokenGuard } from 'src/guards/jwt-token.guard';
 
 @ApiTags('Auth')
 @ApiHeader({ name: 'x-api-key', description: 'API key that must be provided to access this API' })
@@ -50,16 +50,15 @@ export class AuthController {
         return this.authService.signUp(signUpDto);
     }
 
-    @ApiOperation({ summary: 'Endpoint that allow the validation of the access token.', operationId: 'verify-token' })
-    @ApiBearerAuth()
-    @ApiOkResponse({ description: 'Token verified successfully' })
+    @ApiOperation({ summary: 'Endpoint that allow users to sign up (returns JWT).', operationId: 'jwt-sign-up' })
+    @ApiCreatedResponse({ description: 'User signed up successfully', type: JwtResponseDto })
+    @ApiBadRequestResponse({ description: 'User already exists' })
     @ApiUnauthorizedResponse({ description: 'Api key not found' })
     @ApiInternalServerErrorResponse({ description: 'Internal server error' })
-    @UseGuards(JwtTokenGuard)
-    @HttpCode(HttpStatus.OK)
-    @Get('jwt/verify')
-    verifyToken(@Request() req) {
-        return req.user;
+    @HttpCode(HttpStatus.CREATED)
+    @Post('sign-up/jwt')
+    signUpJWT(@Body() signUpDto: SignUpDto) {
+        return this.authService.signUpJWT(signUpDto);
     }
 
     @ApiOperation({ summary: 'Endpoint that allow retrieving profile data.', operationId: 'get-profile' })
@@ -73,7 +72,7 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @Get('profile')
     getProfile(@Request() req) {
-        return this.authService.getProfile(req.user.username);
+        return this.authService.getProfile(req);
     }
 
     @ApiOperation({ summary: 'Endpoint that allow profile data modification.', operationId: 'put-profile' })
@@ -83,12 +82,11 @@ export class AuthController {
     @ApiUnauthorizedResponse({ description: 'Api key not found' })
     @ApiNotFoundResponse({ description: 'User not found' })
     @ApiInternalServerErrorResponse({ description: 'Internal server error' })
-    @ApiParam({ name: 'id', description: 'User Id', example: '1' })
     @UseGuards(JwtTokenGuard)
     @HttpCode(HttpStatus.OK)
-    @Put('profile/:id')
-    putProfile(@Param('id') id: string, @Body() updateProfileDto: UpdateProfileDto) {
-        return this.authService.updateProfile(updateProfileDto, id);
+    @Put('profile')
+    putProfile(@Request() req, @Body() updateProfileDto: UpdateProfileDto) {
+        return this.authService.updateProfile(req, updateProfileDto);
     }
 
     @ApiOperation({ summary: 'Endpoint that allow password modification.', operationId: 'put-password' })
@@ -98,12 +96,11 @@ export class AuthController {
     @ApiUnauthorizedResponse({ description: 'Api key not found' })
     @ApiNotFoundResponse({ description: 'User not found' })
     @ApiInternalServerErrorResponse({ description: 'Internal server error' })
-    @ApiParam({ name: 'id', description: 'User Id', example: '1' })
     @UseGuards(JwtTokenGuard)
     @HttpCode(HttpStatus.OK)
-    @Put('password/:id')
-    putPassword(@Param('id') id: string, @Body() updatePasswordDto: UpdatePasswordDto) {
-        return this.authService.updatePassword(updatePasswordDto, id);
+    @Put('password')
+    putPassword(@Request() req, @Body() updatePasswordDto: UpdatePasswordDto) {
+        return this.authService.updatePassword(req, updatePasswordDto);
     }
 
     @ApiOperation({ summary: 'Endpoint that allow profile data soft deletion.', operationId: 'soft-delete-profile' })
@@ -113,11 +110,10 @@ export class AuthController {
     @ApiUnauthorizedResponse({ description: 'Api key not found' })
     @ApiNotFoundResponse({ description: 'User not found' })
     @ApiInternalServerErrorResponse({ description: 'Internal server error' })
-    @ApiParam({ name: 'id', description: 'User Id', example: '1' })
     @UseGuards(JwtTokenGuard)
     @HttpCode(HttpStatus.NO_CONTENT)
-    @Delete('status/:id')
-    deleteProfile(@Param('id') id: string) {
-        return this.authService.deleteProfile(id);
+    @Delete('profile')
+    deleteProfile(@Request() req) {
+        return this.authService.deleteProfile(req);
     }
 }
