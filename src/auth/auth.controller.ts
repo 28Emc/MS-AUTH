@@ -8,6 +8,8 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import { JwtResponseDto } from './dto/jwt-response.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { JwtTokenGuard } from 'src/guards/jwt-token.guard';
+import { RefreshJwtResponseDto } from './dto/refresh-jwt-response.dto';
+import { RefreshJwtGuard } from 'src/guards/refresh-jwt.guard';
 
 @ApiTags('Auth')
 @ApiHeader({ name: 'x-api-key', description: 'API key that must be provided to access this API' })
@@ -115,5 +117,16 @@ export class AuthController {
     @Delete('profile')
     deleteProfile(@Request() req) {
         return this.authService.deleteProfile(req);
+    }
+
+    @ApiOperation({ summary: 'Endpoint that refresh JWT (returns JWT).', operationId: 'refresh-jwt' })
+    @ApiOkResponse({ description: 'JWT refresh done successfully', type: RefreshJwtResponseDto })
+    @ApiUnauthorizedResponse({ description: 'Api key not found' })
+    @ApiInternalServerErrorResponse({ description: 'Internal server error' })
+    @UseGuards(RefreshJwtGuard)
+    @HttpCode(HttpStatus.OK)
+    @Post('jwt/refresh')
+    refreshJWT(@Request() req) {
+        return this.authService.refreshJWT(req);
     }
 }

@@ -9,12 +9,15 @@ import { AuthResponseDto } from './dto/auth-response.dto';
 import { User, UserStatus } from 'src/user/entities/user.entity';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import * as bcrypt from 'bcrypt';
+import { RefreshJwtResponseDto } from './dto/refresh-jwt-response.dto';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthService {
     constructor(
         private userService: UserService,
         private jwtService: JwtService,
+        private configService: ConfigService
     ) { }
 
     async signIn(user: LoginDto): Promise<any> {
@@ -115,5 +118,14 @@ export class AuthService {
         const deletedUser = await this.userService.softDelete(req.user.sub);
         const { password, ...restOfData } = deletedUser;
         return restOfData;
+    }
+
+    async refreshJWT(req: any): Promise<RefreshJwtResponseDto> {
+        const { iat, exp, ...payload } = req.user;
+        return {
+            refresh_token: await this.jwtService.signAsync({ ...payload }, {
+                expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN')
+            }),
+        };
     }
 }

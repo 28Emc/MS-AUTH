@@ -10,6 +10,7 @@ import { JWTStrategy } from './passport/strategies/jwt.strategy';
 import { PassportController } from './passport/passport.controller';
 import { PassportService } from './passport/passport.service';
 import { GoogleStrategy } from './passport/strategies/google.strategy';
+import { RefreshJWTStrategy } from './passport/strategies/refresh-jwt.strategy';
 
 ConfigModule.forRoot({
   envFilePath: `.env.${process.env.NODE_ENV}`,
@@ -24,13 +25,14 @@ const configService = new ConfigService();
     JwtModule.register({
       global: true,
       secret: configService.get<string>('JWT_SECRET'),
-      signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') },
+      signOptions: { expiresIn: configService.get<string>('TOKEN_EXPIRES_IN') },
     }),
   ],
   providers: [
     AuthService,
     LocalStrategy,
     JWTStrategy,
+    RefreshJWTStrategy,
     GoogleStrategy,
     PassportService
   ],
