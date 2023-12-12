@@ -65,4 +65,56 @@ export class PassportService {
             access_token: await this.jwtService.signAsync(payload),
         };
     }
+
+    async passportFacebookCallback(req: any): Promise<JwtResponseDto> {
+        if (!req) {
+            throw new NotFoundException("User info from Facebook not found");
+        }
+        let payload = {};
+        const foundUser = await this.userRepository
+            .createQueryBuilder('user')
+            .where({ username: req.user.email })
+            .getOne();
+        if (foundUser) {
+            payload = {
+                sub: foundUser.userId,
+                username: foundUser.username,
+                picture: foundUser.picture,
+                firstName: foundUser.firstName,
+                lastName: foundUser.lastName,
+                status: foundUser.status,
+                flgLogin: foundUser.flgLogin,
+                creationDate: foundUser.creationDate,
+                createdBy: foundUser.createdBy,
+                modifiedDate: foundUser.modifiedDate,
+                modifiedBy: foundUser.modifiedBy,
+            };
+        } else {
+            const createdUser = await this.userRepository.save({
+                username: req.user.email,
+                password: await bcrypt.hash(req.user.email, 10),
+                picture: req.user.picture,
+                firstName: req.user.firstName,
+                lastName: req.user.lastName,
+                status: UserStatus.ACTIVE,
+                flgLogin: LoginModes.FACEBOOK
+            });
+            payload = {
+                sub: createdUser.userId,
+                username: createdUser.username,
+                picture: createdUser.picture,
+                firstName: createdUser.firstName,
+                lastName: createdUser.lastName,
+                status: createdUser.status,
+                flgLogin: createdUser.flgLogin,
+                creationDate: createdUser.creationDate,
+                createdBy: createdUser.createdBy,
+                modifiedDate: createdUser.modifiedDate,
+                modifiedBy: createdUser.modifiedBy,
+            };
+        }
+        return {
+            access_token: await this.jwtService.signAsync(payload),
+        };
+    }
 }

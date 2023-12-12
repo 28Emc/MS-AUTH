@@ -39,6 +39,20 @@ export class PassportController {
         return req.user;
     }
 
+    @ApiOperation({ summary: 'Endpoint that allow users to log in (throught Passport facebook strategy, returns JWT).', operationId: 'passport-facebook-sign-in' })
+    @ApiOkResponse({ description: 'User signed in successfully' })
+    @ApiBadRequestResponse({ description: 'Incorrect user or password / User account was suspended' })
+    @ApiUnauthorizedResponse({ description: 'Api key not found' })
+    @ApiNotFoundResponse({ description: 'User not found' })
+    @ApiInternalServerErrorResponse({ description: 'Internal server error' })
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard('facebook'))
+    @Public()
+    @Get('login/facebook')
+    passportFacebookSignIn(@Request() req) {
+        return req.user;
+    }
+
     @ApiOperation({ summary: 'Endpoint that redirect users after log in (throught Passport google strategy).', operationId: 'passport-google-callback' })
     @ApiOkResponse({ description: 'User redirected successfully' })
     @ApiInternalServerErrorResponse({ description: 'Internal server error' })
@@ -48,5 +62,16 @@ export class PassportController {
     @Get('google/callback')
     passportGoogleCallback(@Request() req) {
         return this.passportService.passportGoogleCallback(req);
+    }
+
+    @ApiOperation({ summary: 'Endpoint that redirect users after log in (throught Passport facebook strategy).', operationId: 'passport-facebook-callback' })
+    @ApiOkResponse({ description: 'User redirected successfully' })
+    @ApiInternalServerErrorResponse({ description: 'Internal server error' })
+    @HttpCode(HttpStatus.OK)
+    @UseGuards(AuthGuard('facebook'))
+    @Public()
+    @Get('facebook/callback')
+    passportFacebookCallback(@Request() req) {
+        return this.passportService.passportFacebookCallback(req);
     }
 }

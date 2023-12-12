@@ -7,7 +7,8 @@ export enum UserStatus {
 
 export enum LoginModes {
     'DEFAULT' = 1,
-    'GOOGLE' = 2
+    'GOOGLE' = 2,
+    'FACEBOOK' = 3
 }
 
 @Entity({ name: 'users' })
