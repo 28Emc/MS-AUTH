@@ -5,10 +5,13 @@ export enum UserStatus {
     'INACTIVE' = 'I'
 }
 
+
 export enum LoginModes {
     'DEFAULT' = 1,
     'GOOGLE' = 2,
-    'FACEBOOK' = 3
+    'FACEBOOK' = 3,
+    'GITHUB' = 4,
+    'TWITTER' = 5
 }
 
 @Entity({ name: 'users' })

@@ -12,6 +12,8 @@ import { PassportService } from './passport/passport.service';
 import { GoogleStrategy } from './passport/strategies/google.strategy';
 import { RefreshJWTStrategy } from './passport/strategies/refresh-jwt.strategy';
 import { FacebookStrategy } from './passport/strategies/facebook.strategy';
+import { GithubStrategy } from './passport/strategies/github.strategy';
+import { TwitterStrategy } from './passport/strategies/twitter.strategy';
 
 ConfigModule.forRoot({
   envFilePath: `.env.${process.env.NODE_ENV}`,
@@ -36,6 +38,8 @@ const configService = new ConfigService();
     RefreshJWTStrategy,
     GoogleStrategy,
     FacebookStrategy,
+    GithubStrategy,
+    TwitterStrategy,
     PassportService
   ],
   controllers: [AuthController, PassportController]

@@ -6,6 +6,8 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerCustomOptions, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 import { ApiKeyGuard } from './guards/api-key.guard';
 
+import * as expressSession from "express-session";
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     rawBody: true
@@ -48,6 +50,12 @@ async function bootstrap() {
   app.useBodyParser('json', { limit: '1mb' });
 
   app.enableCors();
+
+  app.use(expressSession({
+    secret: configService.get<string>('API_KEY'),
+    resave: false,
+    saveUninitialized: true
+  }));
 
   await app.listen(configService.get<string>('PORT'));
   console.log(`MS-AUTH listening on port ${configService.get<string>('PORT')}`);
