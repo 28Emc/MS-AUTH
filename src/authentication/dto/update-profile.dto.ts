@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UserStatus } from "../../user/entities/user.entity";
 import { IsEnum, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { UserStatus } from "src/common/enums/enums";
 
 export class UpdateProfileDto {
     @ApiProperty({ description: 'Username', example: 'admin' })

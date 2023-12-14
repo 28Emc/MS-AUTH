@@ -2,9 +2,10 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
+import { BEARER_PREFIX, ENV_FILE_PATH, JWT_SECRET, USER } from '../constants/constants';
 
 ConfigModule.forRoot({
-  envFilePath: `.env.${process.env.NODE_ENV}`,
+  envFilePath: ENV_FILE_PATH,
 });
 
 const configService = new ConfigService();
@@ -22,11 +23,11 @@ export class JwtTokenGuard implements CanActivate {
     try {
       const payload = await this.jwtService.verifyAsync(
         token,
-        { secret: configService.get<string>('JWT_SECRET') }
+        { secret: configService.get<string>(JWT_SECRET) }
       );
       // 💡 We're assigning the payload to the request object here
       // so that we can access it in our route handlers
-      request['user'] = payload;
+      request[USER] = payload;
     } catch {
       throw new UnauthorizedException('The token provided is expired, revoked, malformed, or invalid for other reasons.');
     }
@@ -35,6 +36,6 @@ export class JwtTokenGuard implements CanActivate {
 
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
+    return type === BEARER_PREFIX ? token : undefined;
   }
 }

@@ -1,13 +1,15 @@
 import { BadRequestException, InternalServerErrorException, NotFoundException, Injectable } from '@nestjs/common';
-import { LoginModes, User, UserStatus } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { UserStatus } from 'src/common/enums/enums';
+import { User } from './entities/user.entity';
+import { SECURITY } from 'src/common/constants/constants';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserService {
     constructor(
-        @InjectRepository(User, 'security')
+        @InjectRepository(User, SECURITY)
         private readonly userRepository: Repository<User>,
     ) { }
 
@@ -57,9 +59,6 @@ export class UserService {
         if (!foundUser) {
             throw new NotFoundException('User not found');
         }
-        if (foundUser.flgLogin === LoginModes.GOOGLE) {
-            throw new BadRequestException('Your profile information is linked to your Google Account and cannot be edited here. To update your profile, please sign in to your Google Account and go to your Google Account settings.');
-        }
         try {
             await this.userRepository.update(id, {
                 ...user,
@@ -78,9 +77,6 @@ export class UserService {
         }
         if (foundUser.status !== UserStatus.ACTIVE) {
             throw new BadRequestException('User account was suspended');
-        }
-        if (foundUser.flgLogin === LoginModes.GOOGLE) {
-            throw new BadRequestException('Your profile information is linked to your Google Account and cannot be edited here. To update your profile, please sign in to your Google Account and go to your Google Account settings.');
         }
         const isMatch = await bcrypt.compare(user.currentPassword, foundUser.password);
         if (!isMatch) {

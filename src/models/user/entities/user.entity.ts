@@ -1,18 +1,7 @@
+import { UserStatus, LoginProviders } from "src/common/enums/enums";
 import { PrimaryGeneratedColumn, Column, Entity, UpdateDateColumn, CreateDateColumn } from "typeorm";
 
-export enum UserStatus {
-    'ACTIVE' = 'A',
-    'INACTIVE' = 'I'
-}
 
-
-export enum LoginModes {
-    'DEFAULT' = 1,
-    'GOOGLE' = 2,
-    'FACEBOOK' = 3,
-    'GITHUB' = 4,
-    'TWITTER' = 5
-}
 
 @Entity({ name: 'users' })
 export class User {
@@ -37,8 +26,8 @@ export class User {
     @Column({ name: 'u_status', type: 'enum', enum: UserStatus, default: UserStatus.ACTIVE })
     status: UserStatus;
 
-    @Column({ name: 'u_flg_mode', type: 'enum', enum: LoginModes, default: LoginModes.DEFAULT })
-    flgLogin: LoginModes;
+    @Column({ name: 'u_flg_mode', type: 'enum', enum: LoginProviders, default: LoginProviders.DEFAULT })
+    flgLogin: LoginProviders;
 
     @CreateDateColumn({ name: 'u_creation_date', type: 'datetime' })
     creationDate: Date;
