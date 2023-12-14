@@ -1,22 +1,22 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Profile, Strategy } from 'passport-twitter';
+import { Profile, Strategy } from 'passport-github2';
+import { GITHUB, GITHUB_APP_ID, GITHUB_APP_SECRET, GITHUB_CALLBACK_URL, GITHUB_STRATEGY_SCOPE } from 'src/common/constants/constants';
 
 @Injectable()
-export class TwitterStrategy extends PassportStrategy(Strategy, 'twitter') {
+export class GithubStrategy extends PassportStrategy(Strategy, GITHUB) {
     constructor(configService: ConfigService) {
         super({
-            consumerKey: configService.get<string>('TWITTER_APP_ID'),
-            consumerSecret: configService.get<string>('TWITTER_APP_SECRET'),
-            callbackURL: configService.get<string>('TWITTER_CALLBACK_URL'),
-            // scope: ['email', 'profile'],
+            clientID: configService.get<string>(GITHUB_APP_ID),
+            clientSecret: configService.get<string>(GITHUB_APP_SECRET),
+            callbackURL: configService.get<string>(GITHUB_CALLBACK_URL),
+            scope: GITHUB_STRATEGY_SCOPE,
         });
     }
 
     async validate(accessToken: string, refreshToken: string, profile: Profile, done: any): Promise<any> {
-        console.log('twitter profile', profile)
-        const { username, displayName, name, emails, photos } = profile;
+        const { name, displayName, username, emails, photos } = profile;
         const user = {
             email: username,
             displayName: displayName,

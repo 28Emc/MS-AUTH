@@ -1,6 +1,6 @@
 # MS-AUTH
 
-Microservicio que gestiona el inicio de sesión de forma general.
+Microservicio que gestiona el inicio de sesión de forma local (usuario y contraseña) y mediante redes sociales (Google, Facebook, Github, Twitter).
 
 ## INSTALACIÓN
 

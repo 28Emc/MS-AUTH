@@ -4,9 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerCustomOptions, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
-import { ApiKeyGuard } from './guards/api-key.guard';
+import { ApiKeyGuard } from './common/guards/api-key.guard';
 
 import * as expressSession from "express-session";
+import { API_KEY, BASE_URL, LOCAL, PORT, VERSION } from './common/constants/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -15,8 +16,8 @@ async function bootstrap() {
 
   const configService = app.get(ConfigService);
 
-  const hostDomain = process.env.NODE_ENV === 'local' ? `${configService.get<string>('BASE_URL')}:${configService.get<string>('PORT')}` : `${configService.get<string>('BASE_URL')}`;
-  const globalPrefix = `${configService.get<string>('VERSION')}/api`;
+  const hostDomain = process.env.NODE_ENV === LOCAL ? `${configService.get<string>(BASE_URL)}:${configService.get<string>(PORT)}` : `${configService.get<string>(BASE_URL)}`;
+  const globalPrefix = `${configService.get<string>(VERSION)}/api`;
   const swConfig = new DocumentBuilder()
     .setTitle('Ms Auth')
     .setDescription('Microservicio que gestiona el inicio de sesión de forma general.')
@@ -52,12 +53,12 @@ async function bootstrap() {
   app.enableCors();
 
   app.use(expressSession({
-    secret: configService.get<string>('API_KEY'),
+    secret: configService.get<string>(API_KEY),
     resave: false,
     saveUninitialized: true
   }));
 
-  await app.listen(configService.get<string>('PORT'));
-  console.log(`MS-AUTH listening on port ${configService.get<string>('PORT')}`);
+  await app.listen(configService.get<string>(PORT));
+  console.log(`MS-AUTH listening on port ${configService.get<string>(PORT)}`);
 }
 bootstrap();

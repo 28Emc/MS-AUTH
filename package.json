@@ -1,7 +1,7 @@
 {
   "name": "ms-auth",
   "version": "0.0.1",
-  "description": "Microservicio que gestiona el inicio de sesión de forma general.",
+  "description": "Microservicio que gestiona el inicio de sesión de forma local (usuario y contraseña) y mediante redes sociales (Google, Facebook, Github, Twitter).",
   "author": "Edinson Medina Ch.",
   "private": true,
   "license": "UNLICENSED",

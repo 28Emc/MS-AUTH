@@ -1,16 +1,18 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/user/user.service';
+import { UserService } from 'src/models/user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtResponseDto } from './dto/jwt-response.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
-import { User, UserStatus } from 'src/user/entities/user.entity';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import * as bcrypt from 'bcrypt';
 import { RefreshJwtResponseDto } from './dto/refresh-jwt-response.dto';
 import { ConfigService } from '@nestjs/config';
+import { LoginProviders, UserStatus } from 'src/common/enums/enums';
+import { REFRESH_TOKEN_EXPIRES_IN } from 'src/common/constants/constants';
+import { User } from 'src/models/user/entities/user.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -20,28 +22,12 @@ export class AuthService {
         private configService: ConfigService
     ) { }
 
-    async signIn(user: LoginDto): Promise<any> {
-        const foundUser = await this.userService.findOne(user.username);
-        if (!foundUser) {
-            throw new NotFoundException('User not found');
-        }
-        const isMatch = await bcrypt.compare(user.password, foundUser.password);
-        if (!isMatch) {
-            throw new BadRequestException('Incorrect user or password');
-        }
-        if (foundUser.status !== UserStatus.ACTIVE) {
-            throw new BadRequestException('User account was suspended');
-        }
-        const { password, ...restOfData } = foundUser;
-        return restOfData;
-    }
-
     async signInJWT(user: LoginDto): Promise<JwtResponseDto> {
-        const foundUser = await this.userService.findOne(user.username);
+        const foundUser: User = await this.userService.findOne(user.username);
         if (!foundUser) {
             throw new NotFoundException('User not found');
         }
-        const isMatch = await bcrypt.compare(user.password, foundUser.password);
+        const isMatch: boolean = await bcrypt.compare(user.password, foundUser.password);
         if (!isMatch) {
             throw new BadRequestException('Incorrect user or password');
         }
@@ -66,12 +52,8 @@ export class AuthService {
         };
     }
 
-    async signUp(user: SignUpDto): Promise<User> {
-        return await this.userService.create(user);
-    }
-
     async signUpJWT(user: SignUpDto): Promise<JwtResponseDto> {
-        const createdUser = await this.signUp(user);
+        const createdUser: User = await this.userService.create(user);
         const payload = {
             sub: createdUser.userId,
             username: createdUser.username,
@@ -90,8 +72,27 @@ export class AuthService {
         };
     }
 
+    async loginRedirect(req: any, provider: LoginProviders): Promise<JwtResponseDto> {
+        if (!req) {
+            throw new NotFoundException("User info not found");
+        }
+        // WE'RE ASSUMING THAT req PARAM PROVIDES THE SAME DATA VALUES
+        const payload = {
+            username: req.user.email,
+            displayName: req.user.displayName,
+            firstName: req.user.firstName,
+            lastName: req.user.lastName,
+            picture: req.user.picture,
+            status: UserStatus.ACTIVE,
+            flgLogin: provider
+        };
+        return {
+            access_token: await this.jwtService.signAsync(payload),
+        };
+    }
+
     async getProfile(req: any): Promise<AuthResponseDto> {
-        const foundUser = await this.userService.findById(req.user.sub);
+        const foundUser: User = await this.userService.findById(req.user.sub);
         if (!foundUser) {
             throw new NotFoundException('User not found');
         }
@@ -103,19 +104,25 @@ export class AuthService {
     }
 
     async updateProfile(req: any, user: UpdateProfileDto): Promise<AuthResponseDto> {
-        const updatedUser = await this.userService.update(req.user.sub, user);
+        if (req.user.flgLogin !== LoginProviders.DEFAULT) {
+            throw new BadRequestException(`Your profile information cannot be edited from here. To update your profile, please sign in to your ${LoginProviders[req.user.flgLogin]} Account and go to your ${LoginProviders[req.user.flgLogin]} Account settings.`);
+        }
+        const updatedUser: User = await this.userService.update(req.user.sub, user);
         const { password, ...restOfData } = updatedUser;
         return restOfData;
     }
 
     async updatePassword(req: any, user: UpdatePasswordDto): Promise<AuthResponseDto> {
-        const updatedUser = await this.userService.updatePassword(req.user.sub, user);
+        if (req.user.flgLogin !== LoginProviders.DEFAULT) {
+            throw new BadRequestException(`Your password cannot be edited from here. To update your password, please sign in to your ${LoginProviders[req.user.flgLogin]} Account and go to your ${LoginProviders[req.user.flgLogin]} Account settings.`);
+        }
+        const updatedUser: User = await this.userService.updatePassword(req.user.sub, user);
         const { password, ...restOfData } = updatedUser;
         return restOfData;
     }
 
     async deleteProfile(req: any,): Promise<AuthResponseDto> {
-        const deletedUser = await this.userService.softDelete(req.user.sub);
+        const deletedUser: User = await this.userService.softDelete(req.user.sub);
         const { password, ...restOfData } = deletedUser;
         return restOfData;
     }
@@ -124,7 +131,7 @@ export class AuthService {
         const { iat, exp, ...payload } = req.user;
         return {
             refresh_token: await this.jwtService.signAsync({ ...payload }, {
-                expiresIn: this.configService.get<string>('REFRESH_TOKEN_EXPIRES_IN')
+                expiresIn: this.configService.get<string>(REFRESH_TOKEN_EXPIRES_IN),
             }),
         };
     }
