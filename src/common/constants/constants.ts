@@ -40,3 +40,4 @@ export const LOCAL = 'local';
 export const X_API_KEY = 'x-api-key';
 export const USER = 'user';
 export const IS_PUBLIC = 'isPublic';
+export const FRONTEND_CALLBACK_URL = 'FRONTEND_CALLBACK_URL';

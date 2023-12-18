@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Post, Put, Request, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -13,12 +13,18 @@ import { AuthGuard } from '@nestjs/passport';
 import { Public } from 'src/common/decorators/public.decorator';
 import { LocalAuthGuard } from 'src/common/guards/local-auth.guard';
 import { LoginProviders } from 'src/common/enums/enums';
+import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
+import { FRONTEND_CALLBACK_URL } from 'src/common/constants/constants';
 
 @ApiTags('Auth')
 @ApiHeader({ name: 'x-api-key', description: 'API key that must be provided to access this API' })
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        private configService: ConfigService
+    ) { }
 
     @ApiOperation({ summary: 'Endpoint that allow users to log in (Passport local strategy, returns JWT).', operationId: 'passport-local-sign-in' })
     @ApiOkResponse({ description: 'User signed in successfully', type: JwtResponseDto })
@@ -108,8 +114,9 @@ export class AuthController {
     @UseGuards(AuthGuard('google'))
     @Public()
     @Get('google/redirect')
-    passportGoogleRedirect(@Request() req) {
-        return this.authService.loginRedirect(req, LoginProviders.GOOGLE);
+    async passportGoogleRedirect(@Request() req, @Res() res: Response) {
+        const jwtResponse = await this.authService.loginRedirect(req, LoginProviders.GOOGLE);
+        this.redirecToFrontendWithAccessToken(jwtResponse.access_token, res);
     }
 
     @ApiOperation({ summary: 'Endpoint that redirect users after log in (throught Passport facebook strategy).', operationId: 'passport-facebook-redirect' })
@@ -119,8 +126,9 @@ export class AuthController {
     @UseGuards(AuthGuard('facebook'))
     @Public()
     @Get('facebook/redirect')
-    passportFacebookRedirect(@Request() req) {
-        return this.authService.loginRedirect(req, LoginProviders.FACEBOOK);
+    async passportFacebookRedirect(@Request() req, @Res() res: Response) {
+        const jwtResponse = await this.authService.loginRedirect(req, LoginProviders.FACEBOOK);
+        this.redirecToFrontendWithAccessToken(jwtResponse.access_token, res);
     }
 
     @ApiOperation({ summary: 'Endpoint that redirect users after log in (throught Passport github strategy).', operationId: 'passport-github-redirect' })
@@ -130,8 +138,9 @@ export class AuthController {
     @UseGuards(AuthGuard('github'))
     @Public()
     @Get('github/redirect')
-    passportGithubRedirect(@Request() req) {
-        return this.authService.loginRedirect(req, LoginProviders.GITHUB);
+    async passportGithubRedirect(@Request() req, @Res() res: Response) {
+        const jwtResponse = await this.authService.loginRedirect(req, LoginProviders.GITHUB);
+        this.redirecToFrontendWithAccessToken(jwtResponse.access_token, res);
     }
 
     @ApiOperation({ summary: 'Endpoint that redirect users after log in (throught Passport twitter strategy).', operationId: 'passport-twitter-redirect' })
@@ -141,8 +150,9 @@ export class AuthController {
     @UseGuards(AuthGuard('twitter'))
     @Public()
     @Get('twitter/redirect')
-    passportTwitterRedirect(@Request() req) {
-        return this.authService.loginRedirect(req, LoginProviders.TWITTER);
+    async passportTwitterRedirect(@Request() req, @Res() res: Response) {
+        const jwtResponse = await this.authService.loginRedirect(req, LoginProviders.TWITTER);
+        this.redirecToFrontendWithAccessToken(jwtResponse.access_token, res);
     }
 
     @ApiOperation({ summary: 'Endpoint that allow retrieving profile data throught JWT.', operationId: 'passport-get-profile' })
@@ -208,5 +218,10 @@ export class AuthController {
     @Post('jwt/refresh')
     refreshJWT(@Request() req) {
         return this.authService.refreshJWT(req);
+    }
+
+    private redirecToFrontendWithAccessToken(accessToken: string, @Res() res: Response) {
+        const redirectUrl = new URL(`${this.configService.get<string>(FRONTEND_CALLBACK_URL)}/${accessToken}`);
+        res.redirect(redirectUrl.toString());
     }
 }

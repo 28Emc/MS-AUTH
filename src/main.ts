@@ -5,9 +5,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerCustomOptions, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 import { ApiKeyGuard } from './common/guards/api-key.guard';
+import { API_KEY, BASE_URL, LOCAL, PORT, VERSION } from './common/constants/constants';
 
 import * as expressSession from "express-session";
-import { API_KEY, BASE_URL, LOCAL, PORT, VERSION } from './common/constants/constants';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
