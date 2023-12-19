@@ -221,7 +221,7 @@ export class AuthController {
     }
 
     private redirecToFrontendWithAccessToken(accessToken: string, @Res() res: Response) {
-        const redirectUrl = new URL(`${this.configService.get<string>(FRONTEND_CALLBACK_URL)}/${accessToken}`);
+        const redirectUrl = new URL(`${this.configService.get<string>(FRONTEND_CALLBACK_URL)}?tkn=${accessToken}`);
         res.redirect(redirectUrl.toString());
     }
 }
