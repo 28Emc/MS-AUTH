@@ -6,12 +6,13 @@ pipeline {
     stages {
         stage('Clone sources') {
             steps {
+                echo 'Cloning skipped'
                 // git branch: 'main', url: 'https://github.com/28Emc/MS-AUTH.git'
-                checkout changelog: false,
+                /* checkout changelog: false,
                     scm: scmGit(userRemoteConfigs: [
                         [ credentialsId: 'jenkins',
                             url: 'git@github.com:28Emc/MS-AUTH.git' ]
-                        ])
+                        ]) */
             }
         }
 
