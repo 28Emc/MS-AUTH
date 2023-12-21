@@ -9,7 +9,7 @@ import { AuthResponseDto } from './dto/auth-response.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { RefreshJwtResponseDto } from './dto/refresh-jwt-response.dto';
 import { ConfigService } from '@nestjs/config';
-import { LoginProviders, UserStatus } from 'src/common/enums/enums';
+import { LoginProviders, UserStatus, getEnumValueByKey } from 'src/common/enums/enums';
 import { REFRESH_TOKEN_EXPIRES_IN } from 'src/common/constants/constants';
 import { User } from 'src/models/user/entities/user.entity';
 import * as bcrypt from 'bcrypt';
@@ -41,7 +41,9 @@ export class AuthService {
             firstName: foundUser.firstName,
             lastName: foundUser.lastName,
             status: foundUser.status,
+            statusDsc: getEnumValueByKey(UserStatus, foundUser.status),
             flgLogin: foundUser.flgLogin,
+            flgLoginDsc: getEnumValueByKey(LoginProviders, foundUser.flgLogin),
             creationDate: foundUser.creationDate,
             createdBy: foundUser.createdBy,
             modifiedDate: foundUser.modifiedDate,
@@ -61,7 +63,9 @@ export class AuthService {
             firstName: createdUser.firstName,
             lastName: createdUser.lastName,
             status: createdUser.status,
+            statusDsc: getEnumValueByKey(UserStatus, createdUser.status),
             flgLogin: createdUser.flgLogin,
+            flgLoginDsc: getEnumValueByKey(LoginProviders, createdUser.flgLogin),
             creationDate: createdUser.creationDate,
             createdBy: createdUser.createdBy,
             modifiedDate: createdUser.modifiedDate,
@@ -84,7 +88,9 @@ export class AuthService {
             lastName: req.user.lastName,
             picture: req.user.picture,
             status: UserStatus.ACTIVE,
-            flgLogin: provider
+            statusDsc: getEnumValueByKey(UserStatus, UserStatus.ACTIVE),
+            flgLogin: provider,
+            flgLoginDsc: getEnumValueByKey(LoginProviders, provider),
         };
         return {
             access_token: await this.jwtService.signAsync(payload),
