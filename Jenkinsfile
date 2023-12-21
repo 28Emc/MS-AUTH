@@ -4,11 +4,11 @@ pipeline {
     tools { nodejs 'NodeJS' }
 
     stages {
-        /* stage('Clone sources') {
+        stage('Test') {
             steps {
-                echo 'Cloning skipped'
+                echo 'Tests skipped'
             }
-        } */
+        }
 
         stage('SonarQube analysis') {
             environment {
@@ -19,6 +19,12 @@ pipeline {
                 withSonarQubeEnv('SonarQube') {
                     sh "${SCANNER_HOME}/bin/sonar-scanner"
                 }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploy skipped'
             }
         }
     }
