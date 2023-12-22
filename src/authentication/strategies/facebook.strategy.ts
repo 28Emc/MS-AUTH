@@ -27,7 +27,7 @@ export class FacebookStrategy extends PassportStrategy(Strategy, FACEBOOK) {
             lastName: displayName ? null : name.familyName,
             picture: photos ? photos[0].value : '',
             accessToken,
-            refreshToken // FIXME: REFRESH TOKEN UNDEFINED
+            refreshToken
         };
         done(null, user);
     }
