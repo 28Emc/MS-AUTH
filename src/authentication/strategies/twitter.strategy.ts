@@ -24,7 +24,7 @@ export class TwitterStrategy extends PassportStrategy(Strategy, TWITTER) {
             lastName: displayName ? null : name.familyName,
             picture: photos[0].value,
             accessToken,
-            refreshToken // FIXME: REFRESH TOKEN UNDEFINED
+            refreshToken
         };
         done(null, user);
     }

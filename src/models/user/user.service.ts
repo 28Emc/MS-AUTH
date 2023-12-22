@@ -42,7 +42,7 @@ export class UserService {
         }
         try {
             user.password = await bcrypt.hash(user.password, 10);
-            let picture = 'https://picsum.photos/200'; // TODO: CAMBIAR POR UN SERVICIO DE CARGA DE IMÁGENES Y DEVOLVER LA URL
+            let picture = 'https://picsum.photos/200';
             if (!user.picture || user.picture === '') {
                 user.picture = picture;
             }
