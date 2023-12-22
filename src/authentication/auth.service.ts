@@ -109,13 +109,31 @@ export class AuthService {
         return restOfData;
     }
 
-    async updateProfile(req: any, user: UpdateProfileDto): Promise<AuthResponseDto> {
+    async updateProfile(req: any, user: UpdateProfileDto): Promise<JwtResponseDto> {
         if (req.user.flgLogin !== LoginProviders.DEFAULT) {
             throw new BadRequestException(`Your profile information cannot be edited from here. To update your profile, please sign in to your ${LoginProviders[req.user.flgLogin]} Account and go to your ${LoginProviders[req.user.flgLogin]} Account settings.`);
         }
         const updatedUser: User = await this.userService.update(req.user.sub, user);
         const { password, ...restOfData } = updatedUser;
-        return restOfData;
+        const payload = {
+            sub: restOfData.userId,
+            username: restOfData.username,
+            picture: restOfData.picture,
+            firstName: restOfData.firstName,
+            lastName: restOfData.lastName,
+            status: restOfData.status,
+            statusDsc: getEnumValueByKey(UserStatus, restOfData.status),
+            flgLogin: restOfData.flgLogin,
+            flgLoginDsc: getEnumValueByKey(LoginProviders, restOfData.flgLogin),
+            creationDate: restOfData.creationDate,
+            createdBy: restOfData.createdBy,
+            modifiedDate: restOfData.modifiedDate,
+            modifiedBy: restOfData.modifiedBy,
+        };
+        return {
+            access_token: await this.jwtService.signAsync(payload),
+        };
+        // return restOfData;
     }
 
     async updatePassword(req: any, user: UpdatePasswordDto): Promise<AuthResponseDto> {
