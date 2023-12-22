@@ -167,7 +167,7 @@ export class AuthController {
         return req.user;
     }
 
-    @ApiOperation({ summary: 'Endpoint that allow profile data modification.', operationId: 'put-profile' })
+    @ApiOperation({ summary: 'Endpoint that allow profile data modification (returns JWT).', operationId: 'put-profile' })
     @ApiBearerAuth()
     @ApiOkResponse({ description: 'Profile updated successfully', type: AuthResponseDto })
     @ApiBadRequestResponse({ description: 'User account was suspended' })

@@ -59,6 +59,18 @@ export class UserService {
         if (!foundUser) {
             throw new NotFoundException('User not found');
         }
+
+        const duplicateUser: User = await this.userRepository
+            .createQueryBuilder('user')
+            .where({
+                username: user.username,
+            })
+            .getOne();
+
+        if (duplicateUser && duplicateUser.userId !== foundUser.userId) {
+            throw new NotFoundException('Username already taken');
+        }
+
         try {
             await this.userRepository.update(id, {
                 ...user,
