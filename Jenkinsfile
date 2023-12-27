@@ -40,7 +40,6 @@ pipeline {
         stage('Deploy') {
             environment {
                 GOOGLE_PROJECT_ID = 'lustrous-bonito-409316';
-                GOOGLE_SERVICE_ACCOUNT_KEY = credentials('jenkins-gcp-id');
                 GCP_VERSION = '20231227';
             }
             steps {
