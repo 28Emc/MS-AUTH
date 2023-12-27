@@ -6,7 +6,8 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                echo 'Tests skipped'
+                echo 'Testing the application...'
+                sh 'npm run test'
             }
         }
 
@@ -16,15 +17,27 @@ pipeline {
             }
 
             steps {
+                echo 'Analyzing the application with SonarQube...'
                 withSonarQubeEnv('SonarQube') {
                     sh "${SCANNER_HOME}/bin/sonar-scanner"
                 }
             }
         }
 
-        stage('Deploy') {
+        stage('Build') {
             steps {
-                echo 'Deploy skipped'
+                echo 'Building the application...'
+                sh 'npm run build'
+            }
+        }
+
+        stage('Deploy') {
+            environment {
+                GCP_VERSION = '20231227'
+            }
+            steps {
+                echo 'Deploying the application...'
+                sh 'gcloud app deploy -v=$GCP_VERSION'
             }
         }
     }
