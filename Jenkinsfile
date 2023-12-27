@@ -43,7 +43,7 @@ pipeline {
                 GCP_VERSION = '20231227';
             }
             steps {
-                withCredentials([file(credentialsId: 'jenkins-secret-file', variable: 'GC_KEY')]) {
+                withCredentials([file(credentialsId: 'gcp-secret-file', variable: 'GC_KEY')]) {
                     echo '*** Deploy step started'
                     sh '''#!/bin/bash
                     echo "this is the project id environment: ${GOOGLE_PROJECT_ID}";
