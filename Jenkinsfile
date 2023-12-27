@@ -4,14 +4,9 @@ pipeline {
     tools { nodejs 'NodeJS' }
 
     stages {
-        stage('GIT checkout from version control') {
-            environment {
-                GIT_BRANCH_NAME = '*/ci_cd',
-                GIT_CREDENTIALS_ID = 'jenkins-github-id',
-                GIT_PRIVATE_URL = 'git@github.com:28Emc/MS-AUTH.git',
-            }
-            checkout scmGit(branches: [[name: '$GIT_BRANCH_NAME']],extensions: [],userRemoteConfigs: [[credentialsId: '$GIT_CREDENTIALS_ID', url: '$GIT_PRIVATE_URL']])
-        }
+        //stage('GIT checkout from version control') {
+        checkout scmGit(branches: [[name: '*/ci_cd']],extensions: [],userRemoteConfigs: [[credentialsId: 'jenkins-github-id', url: 'git@github.com:28Emc/MS-AUTH.git']])
+        // }
 
         stage('SonarQube analysis') {
             environment {
