@@ -3,11 +3,7 @@ pipeline {
 
     tools { nodejs 'NodeJS' }
 
-    stages {
-        //stage('GIT checkout from version control') {
-        checkout scmGit(branches: [[name: '*/ci_cd']],extensions: [],userRemoteConfigs: [[credentialsId: 'jenkins-github-id', url: 'git@github.com:28Emc/MS-AUTH.git']])
-        // }
-
+    stages {        
         stage('SonarQube analysis') {
             environment {
                 SCANNER_HOME = tool 'SonarQubeScanner'
