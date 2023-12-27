@@ -53,8 +53,9 @@ pipeline {
                                     
                     source /tmp/google-cloud-sdk/path.bash.inc;
                         
-                    gcloud config set project ${GOOGLE_PROJECT_ID};
                     gcloud auth activate-service-account --key-file=${GC_KEY};
+                    gcloud config list;
+                    gcloud config set project ${GOOGLE_PROJECT_ID};
                     gcloud app deploy -v=${GCP_VERSION}
                     '''         
                     echo '*** Deploy step done'
