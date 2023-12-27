@@ -6,7 +6,7 @@ pipeline {
     stages {        
         stage('SonarQube analysis') {
             environment {
-                SCANNER_HOME = tool 'SonarQubeScanner'
+                SCANNER_HOME = tool 'SonarQubeScanner';
             }
 
             steps {
@@ -39,11 +39,24 @@ pipeline {
 
         stage('Deploy') {
             environment {
-                GCP_VERSION = '20231227'
+                GOOGLE_PROJECT_ID = 'lustrous-bonito-409316';
+                GOOGLE_SERVICE_ACCOUNT_KEY = credentials('jenkins-gcp-id');
+                GCP_VERSION = '20231227';
             }
             steps {
                 echo '*** Deploy step started'
-                //sh 'gcloud app deploy -v=$GCP_VERSION'
+                sh '''
+                echo "this is the project id environment: " + GOOGLE_PROJECT_ID;
+                curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-458.0.0-linux-x86_64.tar.gz;
+				tar -xvf /tmp/google-cloud-sdk.tar.gz -C /tmp/;
+				/tmp/google-cloud-sdk/install.sh -q;
+                    			
+                source /tmp/google-cloud-sdk/path.bash.inc;
+					
+				gcloud config set project ${GOOGLE_PROJECT_ID};
+                gcloud auth activate-service-account --key-file ${GOOGLE_SERVICE_ACCOUNT_KEY};
+                gcloud app deploy -v=${GCP_VERSION}
+                '''            
                 echo '*** Deploy step done'
             }
         }
