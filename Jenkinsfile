@@ -50,15 +50,15 @@ pipeline {
     }
 
     post {
-        echo '*** Post clean up workspace started'
         always {
+            echo '*** Post clean up workspace started'
             cleanWs(cleanWhenNotBuilt: false,
                     deleteDirs: true,
                     disableDeferredWipeout: true,
                     notFailBuild: true,
                     patterns: [[pattern: '.gitignore', type: 'INCLUDE'],
                                [pattern: '.propsfile', type: 'EXCLUDE']])
+            echo '*** Post clean up workspace done'
         }
-        echo '*** Post clean up workspace done'
     }
 }
