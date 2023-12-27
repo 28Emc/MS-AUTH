@@ -44,22 +44,22 @@ pipeline {
                 GCP_VERSION = '20231227';
             }
             steps {
-                echo '*** Deploy step started'
                 withCredentials([file(credentialsId: 'jenkins-secret-file', variable: 'GC_KEY')]) {
-                sh '''#!/bin/bash
-                echo "this is the project id environment: ${GOOGLE_PROJECT_ID}";
-                curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-458.0.0-linux-x86_64.tar.gz;
-				tar -xvf /tmp/google-cloud-sdk.tar.gz -C /tmp/;
-				/tmp/google-cloud-sdk/install.sh -q;
-                    			
-                source /tmp/google-cloud-sdk/path.bash.inc;
-					
-				gcloud config set project ${GOOGLE_PROJECT_ID};
-                gcloud auth activate-service-account --key-file=${GC_KEY};
-                gcloud app deploy -v=${GCP_VERSION}
-                '''         
+                    echo '*** Deploy step started'
+                    sh '''#!/bin/bash
+                    echo "this is the project id environment: ${GOOGLE_PROJECT_ID}";
+                    curl -o /tmp/google-cloud-sdk.tar.gz https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-sdk-458.0.0-linux-x86_64.tar.gz;
+                    tar -xvf /tmp/google-cloud-sdk.tar.gz -C /tmp/;
+                    /tmp/google-cloud-sdk/install.sh -q;
+                                    
+                    source /tmp/google-cloud-sdk/path.bash.inc;
+                        
+                    gcloud config set project ${GOOGLE_PROJECT_ID};
+                    gcloud auth activate-service-account --key-file=${GC_KEY};
+                    gcloud app deploy -v=${GCP_VERSION}
+                    '''         
+                    echo '*** Deploy step done'
                 }
-                echo '*** Deploy step done'
             }
         }
     }
