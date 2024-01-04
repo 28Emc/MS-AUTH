@@ -3,35 +3,35 @@ service: ms-auth
 env: standard
 instance_class: F1
 env_variables:
-  BASE_URL: http://localhost
-  PORT: 3000
+  BASE_URL: https://ms-auth-dot-lustrous-bonito-409316.rj.r.appspot.com
+  PORT: 8080
   VERSION: v1
-  API_KEY: 952f76ab50903522a6a74b5bc3507f12ed7df2ca3a1be0422f0de9788c1f6753
+  API_KEY: 5a3f8ef464f8f63a89c4c9fdb7082bd52d9e353730cf6eb76a8cb66f0ffbb46c
   # JWT CONFIG
-  JWT_SECRET: 874a212f774b84f25035cdd62cfb21a2fd1a38807399b53f0a63b7f69d4168c51e3a3062d5049b418f80a108e0e6a318f8a24c146316f535a557addf71457d32
-  TOKEN_EXPIRES_IN: 10m
+  JWT_SECRET: 8a796db321b94bdc8b14398a2653d492d293725796de69a03f52ab89e28b91f0cd7343ab932dd90722fe2073341bbe9ea751ba3944cfbe11f1d6a352be5b4590
+  TOKEN_EXPIRES_IN: 1h
   REFRESH_TOKEN_EXPIRES_IN: 1d
   # DB CONFIG
-  DB_HOST: localhost
+  DB_SOCKET_PATH: /cloudsql/lustrous-bonito-409316:southamerica-east1:test-gcp-instance
   DB_USER: root
-  DB_PASSWORD: root
-  DB_SECURITY_NAME: db_auth
+  DB_PASSWORD: lpkkn/9y6/vC3??s
+  DB_SECURITY_NAME: db_auth_prod
   # OAUTH2 CONFIG
   ## GOOGLE CREDENTIALS: GO TO https://console.cloud.google.com/ FOR DETAILS
-  GOOGLE_CLIENT_ID: 180238564829-s8287h4i36duoou9euc0klu1jo3faiqg.apps.googleusercontent.com
-  GOOGLE_CLIENT_SECRET: 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
-  GOOGLE_CALLBACK_URL: http://localhost:3000/v1/api/auth/google/redirect
+  GOOGLE_CLIENT_ID: 180238564829-27vglotl6e70efa7niiq5pq5ekh4hqpp.apps.googleusercontent.com
+  GOOGLE_CLIENT_SECRET: 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
+  GOOGLE_CALLBACK_URL: https://ms-auth-dot-lustrous-bonito-409316.rj.r.appspot.com/v1/api/auth/google/redirect
   ## FACEBOOK CREDENTIALS: GO TO https://developers.facebook.com/ FOR DETAILS
-  FACEBOOK_APP_ID: 6347031868731454
-  FACEBOOK_APP_SECRET: 3658ebc63dc7ed0ab1c70f1ed5ac61b8
-  FACEBOOK_CALLBACK_URL: http://localhost:3000/v1/api/auth/facebook/redirect
+  FACEBOOK_APP_ID: 1089079888901065
+  FACEBOOK_APP_SECRET: c2e9260bd941ad4df5bee101df5d7890
+  FACEBOOK_CALLBACK_URL: https://ms-auth-dot-lustrous-bonito-409316.rj.r.appspot.com/v1/api/auth/facebook/redirect
   ## GITHUB CREDENTIALS: GO TO https://github.com/settings/developers FOR DETAILS
-  GITHUB_APP_ID: 48d1302ec05dff7eb1bb
-  GITHUB_APP_SECRET: 4f624363b4761d032f9ef6fa2fefa682bd03c826
-  GITHUB_CALLBACK_URL: http://localhost:3000/v1/api/auth/github/redirect
+  GITHUB_APP_ID: c2be81f5dda07f7fbae5
+  GITHUB_APP_SECRET: 3d0c675f0c9a32ad843febfe3d9fdf977f90b815
+  GITHUB_CALLBACK_URL: https://ms-auth-dot-lustrous-bonito-409316.rj.r.appspot.com/v1/api/auth/github/redirect
   ## TWITTER CREDENTIALS: GO TO https://developer.twitter.com/en FOR DETAILS
   TWITTER_APP_ID: Q9Z4O1WXymddSmnLbJqz3Z1ok
   TWITTER_APP_SECRET: iHpPHCzEnwzfhhBcPSbIsmJwv6TNDFlWX3lScQfYh40M5K3wWt
-  TWITTER_CALLBACK_URL: http://localhost:3000/v1/api/auth/twitter/redirect
+  TWITTER_CALLBACK_URL: https://ms-auth-dot-lustrous-bonito-409316.rj.r.appspot.com/v1/api/auth/twitter/redirect
 
-  FRONTEND_CALLBACK_URL: http://localhost:4200/authentication/oauth-redirect
+  FRONTEND_CALLBACK_URL: https://lustrous-bonito-409316.rj.r.appspot.com/authentication/oauth-redirect
