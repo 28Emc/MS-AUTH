@@ -3,6 +3,7 @@ service: ms-auth
 env: standard
 instance_class: F1
 env_variables:
+  NODE_ENV: production
   BASE_URL: https://ms-auth-dot-lustrous-bonito-409316.rj.r.appspot.com
   PORT: 8080
   VERSION: v1
