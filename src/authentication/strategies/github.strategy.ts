@@ -2,7 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Profile, Strategy } from 'passport-github2';
-import { GITHUB, GITHUB_APP_ID, GITHUB_APP_SECRET, GITHUB_CALLBACK_URL, GITHUB_STRATEGY_SCOPE } from 'src/common/constants/constants';
+import { GITHUB, GITHUB_APP_ID, GITHUB_APP_SECRET, GITHUB_CALLBACK_URL, GITHUB_STRATEGY_SCOPE } from '../../common/constants/constants';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(Strategy, GITHUB) {

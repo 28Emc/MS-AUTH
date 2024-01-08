@@ -11,7 +11,8 @@ import * as expressSession from "express-session";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
-    rawBody: true
+    rawBody: true,
+    logger: ['debug']
   });
 
   const configService = app.get(ConfigService);

@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { UserStatus } from "src/common/enums/enums";
+import { UserStatus } from "../../common/enums/enums";
 
 export class AuthResponseDto {
     @ApiProperty({ description: 'User Id', example: 1 })

@@ -18,21 +18,15 @@ describe('AppController', () => {
     appController = new AppController(appService);
   });
 
+  it('shold be defined', () => {
+    expect(appController).toBeDefined();
+  });
+
   describe('pingToServer', () => {
-    it('should return a text response indicating the server status', async () => {
+    it('it should return a text response indicating the server status', async () => {
       const serviceResult = `MS-AUTH listening on port ${configService.get<string>(PORT)}`;
       jest.spyOn(appService, 'pingToServer').mockImplementation(() => serviceResult);
-
       expect(appController.pingToServer()).toBe(serviceResult);
     });
   });
 });
-
-/* @Injectable()
-export class AppService {
-  constructor(private configService: ConfigService) { }
-
-  pingToServer(): string {
-    return `MS-AUTH listening on port ${this.configService.get<string>(PORT)}`;
-  }
-} */

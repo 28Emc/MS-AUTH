@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from 'src/models/user/user.service';
+import { UserService } from '../models/user/user.service';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/sign-up.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
@@ -9,9 +9,9 @@ import { AuthResponseDto } from './dto/auth-response.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { RefreshJwtResponseDto } from './dto/refresh-jwt-response.dto';
 import { ConfigService } from '@nestjs/config';
-import { LoginProviders, UserStatus, getEnumValueByKey } from 'src/common/enums/enums';
-import { REFRESH_TOKEN_EXPIRES_IN } from 'src/common/constants/constants';
-import { User } from 'src/models/user/entities/user.entity';
+import { LoginProviders, UserStatus, getEnumValueByKey } from '../common/enums/enums';
+import { REFRESH_TOKEN_EXPIRES_IN } from '../common/constants/constants';
+import { User } from '../models/user/entities/user.entity';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -55,6 +55,10 @@ export class AuthService {
     }
 
     async signUpJWT(user: SignUpDto): Promise<JwtResponseDto> {
+        const foundUser: User = await this.userService.findOne(user.username);
+        if (foundUser) {
+            throw new NotFoundException('User already exists');
+        }
         const createdUser: User = await this.userService.create(user);
         const payload = {
             sub: createdUser.userId,
@@ -112,6 +116,10 @@ export class AuthService {
     async updateProfile(req: any, user: UpdateProfileDto): Promise<JwtResponseDto> {
         if (req.user.flgLogin !== LoginProviders.DEFAULT) {
             throw new BadRequestException(`Your profile information cannot be edited from here. To update your profile, please sign in to your ${LoginProviders[req.user.flgLogin]} Account and go to your ${LoginProviders[req.user.flgLogin]} Account settings.`);
+        }
+        const foundUser: User = await this.userService.findById(req.user.sub);
+        if (!foundUser) {
+            throw new NotFoundException('User not found');
         }
         const updatedUser: User = await this.userService.update(req.user.sub, user);
         const { password, ...restOfData } = updatedUser;

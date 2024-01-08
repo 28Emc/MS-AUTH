@@ -2,7 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
-import { LoginProviders, UserStatus, getEnumValueByKey } from 'src/common/enums/enums';
+import { LoginProviders, UserStatus, getEnumValueByKey } from '../../common/enums/enums';
 
 @Injectable()
 export class RefreshJWTStrategy extends PassportStrategy(Strategy, 'jwt-refresh') {

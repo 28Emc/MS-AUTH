@@ -1,4 +1,4 @@
-import { UserStatus, LoginProviders } from "src/common/enums/enums";
+import { UserStatus, LoginProviders } from "../../../common/enums/enums";
 import { PrimaryGeneratedColumn, Column, Entity, UpdateDateColumn, CreateDateColumn } from "typeorm";
 
 

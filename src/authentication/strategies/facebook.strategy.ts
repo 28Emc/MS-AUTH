@@ -2,7 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ConfigService } from '@nestjs/config';
 import { Profile, Strategy } from 'passport-facebook';
 import { Injectable } from '@nestjs/common';
-import { FACEBOOK, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, FACEBOOK_CALLBACK_URL, FACEBOOK_STRATEGY_PROFILE_FIELDS, FACEBOOK_STRATEGY_SCOPE } from 'src/common/constants/constants';
+import { FACEBOOK, FACEBOOK_APP_ID, FACEBOOK_APP_SECRET, FACEBOOK_CALLBACK_URL, FACEBOOK_STRATEGY_PROFILE_FIELDS, FACEBOOK_STRATEGY_SCOPE } from '../../common/constants/constants';
 
 @Injectable()
 export class FacebookStrategy extends PassportStrategy(Strategy, FACEBOOK) {

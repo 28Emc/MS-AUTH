@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource, DataSourceOptions } from 'typeorm';
 import { typeOrmOptionsSecurity } from '../../../config/database/mysql/mysql.config';
-import { SECURITY } from 'src/common/constants/constants';
+import { SECURITY } from '../../../common/constants/constants';
 
 @Module({
     imports: [

@@ -6,16 +6,16 @@ import { ApiBadRequestResponse, ApiBearerAuth, ApiCreatedResponse, ApiHeader, Ap
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { JwtResponseDto } from './dto/jwt-response.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
-import { JwtTokenGuard } from 'src/common/guards/jwt-token.guard';
+import { JwtTokenGuard } from '../common/guards/jwt-token.guard';
 import { RefreshJwtResponseDto } from './dto/refresh-jwt-response.dto';
-import { RefreshJwtGuard } from 'src/common/guards/refresh-jwt.guard';
+import { RefreshJwtGuard } from '../common/guards/refresh-jwt.guard';
 import { AuthGuard } from '@nestjs/passport';
-import { Public } from 'src/common/decorators/public.decorator';
-import { LocalAuthGuard } from 'src/common/guards/local-auth.guard';
-import { LoginProviders } from 'src/common/enums/enums';
+import { Public } from '../common/decorators/public.decorator';
+import { LocalAuthGuard } from '../common/guards/local-auth.guard';
+import { LoginProviders } from '../common/enums/enums';
 import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { FRONTEND_CALLBACK_URL } from 'src/common/constants/constants';
+import { FRONTEND_CALLBACK_URL } from '../common/constants/constants';
 
 @ApiTags('Auth')
 @ApiHeader({ name: 'x-api-key', description: 'API key that must be provided to access this API' })
@@ -36,7 +36,8 @@ export class AuthController {
     @HttpCode(HttpStatus.OK)
     @UseGuards(LocalAuthGuard)
     @Post('login')
-    passportLocalSignIn(@Request() req) {
+    async passportLocalSignIn(@Request() req) {
+        console.log('req.user', req.user)
         return req.user;
     }
 
@@ -50,7 +51,7 @@ export class AuthController {
     @UseGuards(AuthGuard('google'))
     @Public()
     @Get('login/google')
-    passportGoogleSignIn(@Request() req) {
+    async passportGoogleSignIn(@Request() req) {
         return req.user;
     }
 
@@ -64,7 +65,7 @@ export class AuthController {
     @UseGuards(AuthGuard('facebook'))
     @Public()
     @Get('login/facebook')
-    passportFacebookSignIn(@Request() req) {
+    async passportFacebookSignIn(@Request() req) {
         return req.user;
     }
 
@@ -78,7 +79,7 @@ export class AuthController {
     @UseGuards(AuthGuard('github'))
     @Public()
     @Get('login/github')
-    passportGithubSignIn(@Request() req) {
+    async passportGithubSignIn(@Request() req) {
         return req.user;
     }
 
@@ -92,7 +93,7 @@ export class AuthController {
     @UseGuards(AuthGuard('twitter'))
     @Public()
     @Get('login/twitter')
-    passportTwitterSignIn(@Request() req) {
+    async passportTwitterSignIn(@Request() req) {
         return req.user;
     }
 
@@ -103,7 +104,7 @@ export class AuthController {
     @ApiInternalServerErrorResponse({ description: 'Internal server error' })
     @HttpCode(HttpStatus.CREATED)
     @Post('sign-up')
-    signUpJWT(@Body() signUpDto: SignUpDto) {
+    async signUpJWT(@Body() signUpDto: SignUpDto) {
         return this.authService.signUpJWT(signUpDto);
     }
 
@@ -163,7 +164,7 @@ export class AuthController {
     @UseGuards(JwtTokenGuard)
     @HttpCode(HttpStatus.OK)
     @Get('profile')
-    getProfile(@Request() req) {
+    async getProfile(@Request() req) {
         return req.user;
     }
 
@@ -177,7 +178,7 @@ export class AuthController {
     @UseGuards(JwtTokenGuard)
     @HttpCode(HttpStatus.OK)
     @Put('profile')
-    putProfile(@Request() req, @Body() updateProfileDto: UpdateProfileDto) {
+    async putProfile(@Request() req, @Body() updateProfileDto: UpdateProfileDto) {
         return this.authService.updateProfile(req, updateProfileDto);
     }
 
@@ -191,7 +192,7 @@ export class AuthController {
     @UseGuards(JwtTokenGuard)
     @HttpCode(HttpStatus.OK)
     @Put('password')
-    putPassword(@Request() req, @Body() updatePasswordDto: UpdatePasswordDto) {
+    async putPassword(@Request() req, @Body() updatePasswordDto: UpdatePasswordDto) {
         return this.authService.updatePassword(req, updatePasswordDto);
     }
 
@@ -205,7 +206,7 @@ export class AuthController {
     @UseGuards(JwtTokenGuard)
     @HttpCode(HttpStatus.NO_CONTENT)
     @Delete('profile')
-    deleteProfile(@Request() req) {
+    async deleteProfile(@Request() req) {
         return this.authService.deleteProfile(req);
     }
 
@@ -216,7 +217,7 @@ export class AuthController {
     @UseGuards(RefreshJwtGuard)
     @HttpCode(HttpStatus.OK)
     @Post('jwt/refresh')
-    refreshJWT(@Request() req) {
+    async refreshJWT(@Request() req) {
         return this.authService.refreshJWT(req);
     }
 

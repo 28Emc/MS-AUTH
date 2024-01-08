@@ -1,7 +1,7 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { DB_HOST, DB_PASSWORD, DB_SECURITY_NAME, DB_SOCKET_PATH, DB_USER, ENV_FILE_PATH, LOCAL, MYSQL, NODE_ENV, SECURITY } from 'src/common/constants/constants';
-import { User } from 'src/models/user/entities/user.entity';
+import { DB_HOST, DB_PASSWORD, DB_SECURITY_NAME, DB_SOCKET_PATH, DB_USER, ENV_FILE_PATH, LOCAL, MYSQL, NODE_ENV, SECURITY } from '../../../common/constants/constants';
+import { User } from '../../../models/user/entities/user.entity';
 
 ConfigModule.forRoot({
   envFilePath: ENV_FILE_PATH,

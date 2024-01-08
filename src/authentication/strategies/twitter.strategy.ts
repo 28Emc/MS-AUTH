@@ -2,7 +2,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Profile, Strategy } from 'passport-twitter';
-import { TWITTER, TWITTER_APP_ID, TWITTER_APP_SECRET, TWITTER_CALLBACK_URL } from 'src/common/constants/constants';
+import { TWITTER, TWITTER_APP_ID, TWITTER_APP_SECRET, TWITTER_CALLBACK_URL } from '../../common/constants/constants';
 
 @Injectable()
 export class TwitterStrategy extends PassportStrategy(Strategy, TWITTER) {
